@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NGTG Skill Timetable</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1c1b19;--mut:#6b6a65;--line:#e4e2da;--acc:#e8590c;--ok:#2f9e44;--hi:#fff3e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141413;--card:#1e1e1c;--ink:#f0eee8;--mut:#9c9a92;--line:#2f2e2a;--acc:#ff8a4c;--ok:#51cf66;--hi:#2b2018}}
+:root[data-theme="dark"]{--bg:#141413;--card:#1e1e1c;--ink:#f0eee8;--mut:#9c9a92;--line:#2f2e2a;--acc:#ff8a4c;--ok:#51cf66;--hi:#2b2018}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 2px}h2{font-size:16px;margin:24px 0 10px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.st b{display:block;font-size:20px}.st span{font-size:11px;color:var(--mut)}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 0 6px}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer}
+.tab.on{background:var(--acc);border-color:var(--acc);color:#fff}.tab small{opacity:.75}
+.theme{font-weight:600;margin:8px 0 10px}
+.row{display:flex;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.row.now{border-color:var(--acc);background:var(--hi)}
+.row.f{opacity:.7;padding:6px 12px}
+.tm{flex:0 0 74px;font-size:12px;color:var(--mut);padding-top:2px}
+.bd{flex:1;min-width:0}.tt{font-weight:600}.tk{font-size:13px;color:var(--mut);margin-top:2px}
+.row.dn .tt{text-decoration:line-through;color:var(--mut)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok);flex:0 0 auto;margin-top:2px}
+.tr{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+.trh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btns button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:18px;cursor:pointer}
+.note{font-size:13px;color:var(--mut)}.note li{margin-bottom:4px}
+.gh{font-size:13px;margin:14px 0 6px;color:var(--acc)}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.ms{border-radius:18px;padding:12px;background:var(--card);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);box-shadow:0 6px 20px rgba(120,90,50,.08),inset 0 1px 0 rgba(255,255,255,.95)}
+.ms.lk{opacity:.7}.ms.ul{background:linear-gradient(135deg,rgba(255,232,200,.9),rgba(255,255,255,.6));border-color:rgba(200,116,58,.5)}
+.ms b{display:block;font-size:14px}.ms p{margin:2px 0 6px;font-size:12px;color:var(--mut)}.ms em{font-size:12px;color:var(--acc);font-style:normal}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160px);background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(200,116,58,.5);border-radius:18px;padding:12px 16px;box-shadow:0 12px 36px rgba(120,90,50,.25);max-width:90%;font-size:14px;transition:transform .4s;z-index:9}
+.toast.on{transform:translate(-50%,0)}
+.reset{margin-top:20px;background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;padding:8px 12px;font:inherit;font-size:12px;cursor:pointer}
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#f7f1e6;--card:rgba(255,255,255,.55);--ink:#2b2620;--mut:#7a7066;--line:rgba(255,255,255,.7);--acc:#c8743a;--ok:#4f8a5b;--hi:rgba(255,236,210,.75);color-scheme:light}
+body{background:radial-gradient(900px 600px at 10% -10%,#ffe6c4 0,transparent 60%),radial-gradient(800px 600px at 100% 10%,#f6d9cc 0,transparent 55%),radial-gradient(900px 700px at 50% 110%,#e8e3cc 0,transparent 60%),#f7f1e6;background-attachment:fixed;min-height:100vh}
+h1{font-size:27px;letter-spacing:-.02em}
+.st,.row,.tr,.tab{background:var(--card);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border:1px solid rgba(255,255,255,.8);box-shadow:0 8px 24px rgba(120,90,50,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3)}
+.st,.tr{border-radius:20px}.row{border-radius:16px}.tab{border-radius:999px}
+.tab.on{background:linear-gradient(135deg,rgba(210,128,66,.95),rgba(234,168,106,.92));color:#fff;border-color:rgba(255,255,255,.7)}
+.row.now{background:var(--hi);border-color:rgba(200,116,58,.55);box-shadow:0 8px 28px rgba(200,116,58,.22),inset 0 1px 0 rgba(255,255,255,.95)}
+.row.f{box-shadow:none;background:rgba(255,255,255,.35)}
+.bar{background:rgba(120,90,50,.12);height:9px}
+.bar i{background:linear-gradient(90deg,#e6a368,#c8743a)}
+.btns button{background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 6px rgba(120,90,50,.12)}
+.reset{background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-color:rgba(255,255,255,.8)}
+</style></head><body><main>
+<h1>NGTG Skill Timetable</h1>
+<p class="sub">After Effects · Documentary editing · Client style research · Portfolio</p>
+<div class="stats" id="stats"></div>
+<div class="tabs" id="tabs"></div>
+<div class="theme" id="theme"></div>
+<div id="rows"></div>
+<h2>Portfolio targets <span id="tot" class="note"></span></h2><div id="trk"></div>
+<h2>Milestones <span id="mtot" class="note"></span></h2>
+<div class="mg" id="ms"></div>
+<h2>Rules that make this work</h2>
+<ul class="note">
+<li>Weekday sleep is 1:00 to 7:00 (6 hrs). The 2:00–5:00 nap covers part of the gap. If you feel foggy for 3+ days, move Block C earlier or drop it.</li>
+<li>Miss a block? Skip it, do not stack it. A 70% day keeps your streak.</li>
+<li>Phone off during Blocks A and B. Use the commute for passive watching only.</li>
+<li>Every Friday and Saturday must end with something exported, even if rough.</li>
+</ul>
+<button class="reset" id="reset">Reset all progress</button>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const W=(d,a,b,c)=>[
+['07:00','Wake up, freshen up','','f'],
+['07:30','Warm-up drill (30 min)',d,'t'],
+['08:30','College + commute','Watch one motion/documentary breakdown on the way (20 min)','t'],
+['14:00','Home, lunch, nap','','f'],
+['17:00','Tea, reset, set up workspace','','f'],
+['17:30','Block A · Learn (2 hrs)',a,'t'],
+['19:30','Light snack, get ready, travel','','f'],
+['20:00','Gym (till 9:30 PM)','','f'],
+['21:30','Shower + dinner','','f'],
+['22:15','Block B · Practice (1.5 hrs)',b,'t'],
+['23:45','Block C · Create (45 min)',c,'t'],
+['24:30','Log progress, plan tomorrow (15 min)','Tick tasks, update counters, write tomorrow\'s top 3','t'],
+['24:45','Wind down, sleep by 1:00','','f']];
+const DAYS=[
+{n:'Monday',s:'Mon',t:'After Effects Core',b:W('Learn 5 new AE shortcuts, use them all session','Course: AE interface, panels, workspaces, composition settings, keyframes, anchor point','Recreate a bouncing ball and a logo reveal; tune easing in the Graph Editor','Browse Behance for 30 min, save 3 refs, write one line on why each works')},
+{n:'Tuesday',s:'Tue',t:'Documentary Editing',b:W('Cut-list drill: pick a 60s doc scene, note every cut','Study: watch one documentary scene shot by shot, read 1 chapter of Murch','Edit a 3-min interview with B-roll; clean audio in Fairlight/Audition','Mini-documentary: write outline and shot list for the next scene')},
+{n:'Wednesday',s:'Wed',t:'Type, Shapes, Expressions',b:W('Practice trim paths on 3 shapes','Course: shape layers, text animators, parenting, pre-comps','Build a 15s kinetic typography piece; add wiggle() and loopOut()','Rebuild one shot from a Vimeo Staff Pick')},
+{n:'Thursday',s:'Thu',t:'Client Style Research',b:W('Open the client\'s top video and count cuts per minute','Analyse 5 client videos: pacing, captions, music, SFX, colour, transitions','Recut a 60s sample in the client\'s style','Write a style sheet (fonts, colours, transitions) and save it as a project template')},
+{n:'Friday',s:'Fri',t:'Portfolio Piece',b:W('Quick storyboard sketch (15 min)','Plan piece: moodboard, 3 style frames, storyboard','Animate the piece (main build)','Render, polish, export, and add to your portfolio page')},
+{n:'Saturday',s:'Sat',t:'Deep Project Day',b:[
+['08:00','Wake, breakfast','','f'],
+['09:00','Deep block 1 · Mini-documentary edit (3 hrs)','Assemble, trim, add music and sound','t'],
+['12:00','Lunch + rest','','f'],
+['14:00','Deep block 2 · After Effects project (3 hrs)','Continue the week\'s portfolio piece or a new recreation','t'],
+['17:00','Break / outdoors','','f'],
+['19:00','Portfolio upload (2 hrs)','Update Behance/website, write case-study captions','t'],
+['21:00','Weekly log (15 min)','Tick tasks, update counters','t'],
+['21:30','Free time','','f']]},
+{n:'Sunday',s:'Sun',t:'Review + Reset',b:[
+['09:00','Wake slowly','','f'],
+['10:00','Weekly review (1 hr)','Rewatch the week\'s work, list 3 weaknesses','t'],
+['11:00','Redo weakest skill (2 hrs)','Practise only the weakest item from the review','t'],
+['13:00','Lunch + rest','','f'],
+['16:00','Inspiration hour (1 hr)','Behance, Vimeo Staff Picks, Motionographer: save 5 refs','t'],
+['17:00','Plan next week (30 min)','Pick the week\'s recreation, doc scene, and portfolio piece','t'],
+['17:30','Fully off','','f']]}];
+const TR=[
+['Talking-head captioned reels',15,'Short-form reels'],['Beat-synced / fast-cut reels',10],['Motion graphics reels',10],['Tracking reels (text/object tracking, screen replace)',8],
+['Full multicam episodes',5,'Podcast editing'],['Clips/shorts from long episodes',10],
+['3–5 min mini documentaries',4,'YouTube-style documentary + motion graphics'],['Graphics packs (maps, charts, timelines, lower thirds)',6],
+['Interview + B-roll scenes (2–3 min)',6,'Netflix-style documentary'],['Archival / photo-animation scenes',5],['Full 8–10 min short documentary',2],
+['Colour grading passes',5,'Fundamentals'],['Audio mix passes',5]];
+let S={};try{S=JSON.parse(localStorage.getItem('ngtt'))||{}}catch(e){}
+S.d=S.d||{};S.c=S.c||{};S.u=S.u||{};
+const save=()=>{try{localStorage.setItem('ngtt',JSON.stringify(S))}catch(e){}};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=(new Date().getDay()+6)%7;
+const dateOf=i=>{const m=new Date();m.setHours(0,0,0,0);m.setDate(m.getDate()-today+i);return m};
+const lab=t=>{let[h,m]=t.split(':').map(Number);h%=24;return((h%12)||12)+':'+String(m).padStart(2,'0')+(h>=12?' PM':' AM')};
+const mins=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+const key=(date,r)=>iso(date)+'|'+r;
+function pct(date,i){const b=DAYS[i].b;let n=0,d=0;b.forEach((r,k)=>{if(r[3]=='t'){n++;if(S.d[key(date,k)])d++}});return n?d/n:0}
+let sel=today;
+function render(){
+ let wk=0;for(let i=0;i<7;i++)wk+=pct(dateOf(i),i);wk=Math.round(wk/7*100);
+ let st=0;for(let j=0;j<90;j++){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-j);const i=(d.getDay()+6)%7;if(pct(d,i)>=.7)st++;else if(j>0)break}
+ const total=Object.keys(S.d).length,tp=Math.round(pct(dateOf(today),today)*100);
+ document.getElementById('stats').innerHTML=[[tp+'%','Today'],[wk+'%','This week'],[st,'Day streak'],[total,'Tasks done']].map(x=>`<div class="st"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+ document.getElementById('tabs').innerHTML=DAYS.map((d,i)=>`<button class="tab${i==sel?' on':''}" data-i="${i}">${d.s}${i==today?' <small>today</small>':''}</button>`).join('');
+ const D=DAYS[sel],date=dateOf(sel);
+ document.getElementById('theme').innerHTML=`${D.n}: ${D.t}<div class="bar"><i style="width:${Math.round(pct(date,sel)*100)}%"></i></div>`;
+ let cur=-1;if(sel==today){const n=new Date();let nm=n.getHours()*60+n.getMinutes();if(nm<240)nm+=1440;D.b.forEach((r,k)=>{if(mins(r[0])<=nm)cur=k})}
+ document.getElementById('rows').innerHTML=D.b.map((r,k)=>{const t=r[3]=='t',dn=t&&S.d[key(date,k)];
+  return `<div class="row${t?'':' f'}${k==cur?' now':''}${dn?' dn':''}">${t?`<input type="checkbox" data-k="${k}"${dn?' checked':''}>`:''}<div class="tm">${lab(r[0])}</div><div class="bd"><div class="tt">${r[1]}</div>${r[2]?`<div class="tk">${r[2]}</div>`:''}</div></div>`}).join('');
+ document.getElementById('trk').innerHTML=TR.map((t,i)=>{const v=S.c[i]||0;return (t[2]?`<h3 class="gh">${t[2]}</h3>`:'')+`<div class="tr"><div class="trh"><div><b>${t[0]}</b><div class="note">${v} / ${t[1]}</div></div><div class="btns"><button data-c="${i}" data-s="-1">−</button> <button data-c="${i}" data-s="1">+</button></div></div><div class="bar"><i style="width:${Math.min(100,v/t[1]*100)}%"></i></div></div>`}).join('');
+const tv=TR.reduce((a,t,i)=>a+(S.c[i]||0),0),tt=TR.reduce((a,t)=>a+t[1],0);document.getElementById('tot').textContent=' — '+tv+' / '+tt+' pieces';mile();
+}
+document.addEventListener('click',e=>{
+ const t=e.target;
+ if(t.dataset.i!==undefined){sel=+t.dataset.i;render()}
+ if(t.dataset.c!==undefined){const i=t.dataset.c;S.c[i]=Math.max(0,Math.min(TR[i][1],(S.c[i]||0)+ +t.dataset.s));save();render()}
+ if(t.id=='reset'&&confirm('Erase all progress?')){S={d:{},c:{},u:{}};save();render()}
+});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.k!==undefined){const k=key(dateOf(sel),t.dataset.k);t.checked?S.d[k]=1:delete S.d[k];save();render()}});
+function cats(){const c={A:0,B:0,C:0,W:0,D:0,all:0};Object.keys(S.d).forEach(k=>{const q=k.split('|'),p=q[0].split('-'),dt=new Date(+p[0],p[1]-1,+p[2]),row=DAYS[(dt.getDay()+6)%7].b[q[1]];if(!row)return;c.all++;const t=row[1];if(t.startsWith('Block A'))c.A++;else if(t.startsWith('Block B'))c.B++;else if(t.startsWith('Block C'))c.C++;else if(t.startsWith('Warm-up'))c.W++;else if(t.startsWith('Deep block'))c.D++});return c}
+function dstats(){const ks=Object.keys(S.d).map(k=>k.split('|')[0]).sort();if(!ks.length)return{perfect:0,best:0};const p=ks[0].split('-'),d=new Date(+p[0],p[1]-1,+p[2]),end=new Date();end.setHours(0,0,0,0);let perfect=0,best=0,run=0;for(;d<=end;d.setDate(d.getDate()+1)){const v=pct(d,(d.getDay()+6)%7);if(v>=1)perfect++;if(v>=.7){run++;best=Math.max(best,run)}else run=0}return{perfect,best}}
+let tmr;function toast(m){const e=document.getElementById('toast');e.innerHTML='🏆 <b>Milestone unlocked: '+m[1]+'</b><br>'+m[5];e.classList.add('on');clearTimeout(tmr);tmr=setTimeout(()=>e.classList.remove('on'),4500)}
+function mile(){
+ const c=cats(),y=dstats(),pc=TR.reduce((a,t,i)=>a+(S.c[i]||0),0),pt=TR.reduce((a,t)=>a+t[1],0),gs=[];
+ TR.forEach((t,i)=>{if(t[2])gs.push({n:t[2],a:[]});gs[gs.length-1].a.push(i)});
+ const M=[
+ ['t1','First step','Complete any task',c.all,1,'Reward: a good cup of chai'],
+ ['t2','Rolling','Complete 25 tasks',c.all,25,'Reward: your favourite snack'],
+ ['t3','Locked in','Complete 100 tasks',c.all,100,'Reward: a movie night'],
+ ['t4','Machine','Complete 250 tasks',c.all,250,'Reward: a new plugin or template pack'],
+ ['a1','Student','Finish Block A (Learn) 10 times',c.A,10,'Reward: one guilt-free hour'],
+ ['a2','Scholar','Finish Block A 30 times',c.A,30,'Reward: a new course or book'],
+ ['b1','Practitioner','Finish Block B (Practice) 10 times',c.B,10,'Reward: a fresh playlist session'],
+ ['b2','Craftsman','Finish Block B 30 times',c.B,30,'Reward: a good meal out'],
+ ['c1','Creator','Finish Block C (Create) 10 times',c.C,10,'Reward: one lazy morning'],
+ ['c2','Finisher','Finish Block C 30 times',c.C,30,'Reward: a new accessory for your setup'],
+ ['w1','Warm-up habit','Finish the 7:30 warm-up 15 times',c.W,15,'Reward: a new shortcut cheat sheet print'],
+ ['d1','Deep worker','Finish 4 Saturday deep blocks',c.D,4,'Reward: a full evening off'],
+ ['p1','Perfect day','Finish every task in one day',y.perfect,1,'Reward: dessert'],
+ ['p2','Five perfect days','Finish every task on 5 days',y.perfect,5,'Reward: a day trip'],
+ ['s1','3-day streak','3 days in a row at 70%+',y.best,3,'Reward: a favourite show episode'],
+ ['s2','7-day streak','7 days in a row at 70%+',y.best,7,'Reward: a treat of your choice'],
+ ['s3','14-day streak','14 days in a row at 70%+',y.best,14,'Reward: something you have wanted to buy'],
+ ['s4','30-day streak','30 days in a row at 70%+',y.best,30,'Reward: a proper celebration'],
+ ['x1','10 pieces','Make 10 portfolio pieces',pc,10,'Reward: share your best one'],
+ ['x2','25 pieces','Make 25 portfolio pieces',pc,25,'Reward: update your portfolio page'],
+ ['x3','50 pieces','Make 50 portfolio pieces',pc,50,'Reward: pitch 3 new clients'],
+ ['x4','All targets','Hit every portfolio target',pc,pt,'Reward: a big celebration']
+ ].concat(gs.map((g,j)=>['g'+j,g.n+' complete','Hit every target in this group',g.a.filter(i=>(S.c[i]||0)>=TR[i][1]).length,g.a.length,'Reward: post it publicly']));
+ let un=0;const nw=[];
+ document.getElementById('ms').innerHTML=M.map(m=>{const ok=m[3]>=m[4]||S.u[m[0]];if(ok){un++;if(!S.u[m[0]]){S.u[m[0]]=1;nw.push(m)}}
+  return `<div class="ms ${ok?'ul':'lk'}"><b>${ok?'✓ ':''}${m[1]}</b><p>${m[2]}</p>${ok?`<em>${m[5]}</em>`:`<div class="bar"><i style="width:${Math.min(100,m[3]/m[4]*100)}%"></i></div><p>${Math.min(m[3],m[4])} / ${m[4]}</p>`}</div>`}).join('');
+ document.getElementById('mtot').textContent=' — '+un+' / '+M.length+' unlocked';
+ if(nw.length){save();toast(nw[nw.length-1])}
+}
+render();setInterval(()=>{if(sel==today)render()},60000);
+</script></body></html>
